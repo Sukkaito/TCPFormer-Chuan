@@ -1,12 +1,21 @@
-FROM python:3.10-slim
+FROM python:3.10-slim as builder
+
+WORKDIR /app/data
+
+RUN pip install --no-cache-dir gdown
+
+RUN gdown 124t_JEyiavo_qYcFj6iSKVudMm268brG -O TCPFormer_ap3d_81.pth.tr
+# RUN gdown 1_EjMWL9Rd9hPXaSahzShxm1-Ud2f4o5r -O train.pkl
+
+FROM runpod/pytorch:1.0.3-cu1281-torch280-ubuntu2404
+
+WORKDIR /app
 
 # Install system dependencies for OpenCV
 RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
 
 # Copy requirement and install
 COPY requirements.txt .
@@ -17,6 +26,9 @@ COPY api.py compare_service.py report_service.py pose3d_service.py utils.py dto.
 
 # Create output and cache directories
 RUN mkdir -p /app/output /app/cache
+
+# Copy large model weight last (minimize rebuilds of earlier layers)
+COPY --from=builder /app/data/* ./
 
 EXPOSE 8000
 

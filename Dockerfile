@@ -27,7 +27,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application files
-COPY api.py compare_service.py report_service.py pose3d_service.py utils.py dto.py config.py ./
+COPY api.py compare_service.py report_service.py pose2d_service.py pose3d_service.py utils.py dto.py config.py ./
 
 # Create output and cache directories
 RUN mkdir -p /app/output /app/cache

@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+tutorial-env/
+venv/
+env/
+.env
+
+# Application cache and output directories
+cache/
+output/
+__pycache__/
+*.mp4
+*.jpg
+*.png
+
+# IDEs
+.idea/
+.vscode/
+.gemini/

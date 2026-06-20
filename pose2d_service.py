@@ -3,6 +3,7 @@ import numpy as np
 from pathlib import Path
 from sklearn.cluster import KMeans
 from config import Config
+from typing import Any
 
 class Pose2DService:
     @staticmethod

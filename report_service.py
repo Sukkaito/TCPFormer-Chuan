@@ -1,7 +1,7 @@
 from collections import defaultdict
 from html import escape
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from dto import CompareReport
 
 class ReportGenerator:

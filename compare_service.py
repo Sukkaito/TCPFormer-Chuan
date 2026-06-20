@@ -49,6 +49,31 @@ class PoseComparator:
         return centered / scale, scale
 
     @staticmethod
+    def align_poses_3d(ref_pose: np.ndarray, stu_pose: np.ndarray) -> np.ndarray:
+        """
+        Sử dụng thuật toán Kabsch (Procrustes Analysis) để tìm ma trận xoay tối ưu R
+        nhằm xoay stu_pose khớp với ref_pose.
+        Cả hai pose đều phải được chuẩn hóa (normalize) và có cùng kích thước.
+        """
+        # H = stu_pose^T * ref_pose
+        H = np.dot(stu_pose.T, ref_pose)
+        
+        # SVD
+        U, S, Vt = np.linalg.svd(H)
+        
+        # R = V * U^T
+        R = np.dot(Vt.T, U.T)
+        
+        # Đảm bảo không bị lật ngược (Reflection)
+        if np.linalg.det(R) < 0:
+            Vt[2, :] *= -1
+            R = np.dot(Vt.T, U.T)
+            
+        # Xoay student pose
+        stu_aligned = np.dot(stu_pose, R)
+        return stu_aligned
+
+    @staticmethod
     def compare_pose_frame(
         ref_pose12_xyz: np.ndarray,
         stu_pose12_xyz: np.ndarray,
@@ -57,6 +82,9 @@ class PoseComparator:
     ) -> List[ErrorDetail]:
         ref_norm, _ = PoseComparator.normalize_pose12(ref_pose12_xyz)
         stu_norm, _ = PoseComparator.normalize_pose12(stu_pose12_xyz)
+        
+        # XOAY (ALIGN) sinh viên khớp với góc quay của người mẫu
+        stu_norm = PoseComparator.align_poses_3d(ref_norm, stu_norm)
 
         errors: List[ErrorDetail] = []
 
